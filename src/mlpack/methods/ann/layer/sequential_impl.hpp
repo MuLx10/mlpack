@@ -21,6 +21,7 @@
 #include "../visitor/gradient_visitor.hpp"
 #include "../visitor/set_input_height_visitor.hpp"
 #include "../visitor/set_input_width_visitor.hpp"
+#include "../visitor/weight_set_visitor.hpp"
 
 namespace mlpack {
 namespace ann /** Artificial Neural Network. */ {
@@ -191,6 +192,23 @@ void Sequential<
   }
 }
 
+template <typename InputDataType, typename OutputDataType, bool Residual,
+          typename... CustomLayers>
+void Sequential<InputDataType, OutputDataType,
+    Residual, CustomLayers...>::Swap(Sequential& network)
+{
+  std::swap(width, network.width);
+  std::swap(height, network.height);
+  std::swap(reset, network.reset);
+  std::swap(this->network, network.network);
+  std::swap(parameters, network.parameters);
+  std::swap(delta, network.delta);
+  std::swap(inputParameter, network.inputParameter);
+  std::swap(outputParameter, network.outputParameter);
+  std::swap(gradient, network.gradient);
+};
+
+
 template<typename InputDataType, typename OutputDataType, bool Residual,
          typename... CustomLayers>
 template<typename Archive>
@@ -206,10 +224,20 @@ void Sequential<
       boost::apply_visitor(deleteVisitor, layer);
     }
   }
-
+  ar & BOOST_SERIALIZATION_NVP(parameters);
   ar & BOOST_SERIALIZATION_NVP(model);
   ar & BOOST_SERIALIZATION_NVP(network);
 }
+
+template<typename InputDataType, typename OutputDataType, bool Residual,
+         typename... CustomLayers>
+Sequential<InputDataType, OutputDataType, Residual, CustomLayers...>&
+Sequential<InputDataType, OutputDataType,
+    Residual, CustomLayers...>::operator = (Sequential network)
+{
+  Swap(network);
+  return *this;
+};
 
 } // namespace ann
 } // namespace mlpack

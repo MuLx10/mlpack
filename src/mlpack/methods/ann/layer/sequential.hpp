@@ -81,6 +81,9 @@ class Sequential
   //! Destroy the Sequential object.
   ~Sequential();
 
+  //! Copy/move assignment operator.
+  Sequential& operator = (Sequential);
+
   /**
    * Ordinary feed forward pass of a neural network, evaluating the function
    * f(x) by propagating the activity forward through f.
@@ -178,6 +181,13 @@ class Sequential
    */
   template<typename Archive>
   void serialize(Archive& /* ar */, const unsigned int /* version */);
+
+  /**
+   * Swap the content of this network with given network.
+   *
+   * @param network Desired source network.
+   */
+  void Swap(Sequential& network);
 
  private:
   //! Parameter which indicates if the modules should be exposed.
