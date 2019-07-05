@@ -20,6 +20,11 @@
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
+#include "image_info.hpp"
+
+#ifdef HAS_STB // Include this only if stb is present.
+#include "load_image.hpp"
+#endif
 
 namespace mlpack {
 namespace data {
@@ -282,6 +287,56 @@ bool Save(const std::string& filename,
     return false;
   }
 }
+
+#ifdef HAS_STB
+// Image saving API.
+template<typename eT>
+bool Save(const std::string& filename,
+          arma::Mat<eT>& matrix,
+          ImageInfo& info,
+          const bool fatal,
+          const bool transpose)
+{
+  std::vector<std::string> files{filename};
+  return Save(files, matrix, info, fatal, transpose);
+}
+
+// Image saving API for multiple files.
+template<typename eT>
+bool Save(const std::vector<std::string>& files,
+          arma::Mat<eT>& matrix,
+          ImageInfo& info,
+          const bool fatal,
+          const bool transpose)
+{
+  Timer::Start("saving_image");
+  bool status;
+
+  // We transpose by default. So, un-transpose if necessary.
+  if (!transpose)
+    matrix = arma::trans(matrix);
+
+  try
+  {
+    Image saver;
+    status = saver.Save(files, matrix, info.width, info.height,
+        info.channels, info.flipVertical, info.quality);
+  }
+  catch (std::exception& e)
+  {
+    Timer::Stop("saving_image");
+    if (fatal)
+      Log::Fatal << e.what() << std::endl;
+    else
+      Log::Warn << e.what() << std::endl;
+
+    return false;
+  }
+
+  Timer::Start("saving_image");
+  return status;
+}
+#endif
 
 } // namespace data
 } // namespace mlpack

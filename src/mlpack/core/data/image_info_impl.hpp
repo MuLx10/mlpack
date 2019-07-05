@@ -10,10 +10,10 @@
  * http://www.opensource.org/licenses/BSD-3-Clause for more information.
  */
 
+#ifdef HAS_STB // Compile this only if stb is present.
+
 #ifndef MLPACK_CORE_DATA_IMAGE_INFO_IMPL_HPP
 #define MLPACK_CORE_DATA_IMAGE_INFO_IMPL_HPP
-
-#ifdef HAS_STB // Compile this only if stb is present.
 
 // In case it hasn't been included yet.
 #include "image_info.hpp"
@@ -79,6 +79,6 @@ ImageInfo::~ImageInfo()
 } // namespace data
 } // namespace mlpack
 
-#endif // HAS_STB.
-
 #endif
+
+#endif // HAS_STB.

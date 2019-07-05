@@ -28,6 +28,10 @@
 
 #include "load_arff.hpp"
 
+#ifdef HAS_STB // Include this only if stb is present.
+#include "load_image.hpp"
+#endif
+
 namespace mlpack {
 namespace data {
 
@@ -392,6 +396,55 @@ bool Load(const std::string& filename,
 
   return true;
 }
+
+#ifdef HAS_STB
+// Image loading API.
+template<typename eT>
+bool Load(const std::string& filename,
+          arma::Mat<eT>& matrix,
+          ImageInfo& info,
+          const bool fatal,
+          const bool transpose)
+{
+  std::vector<std::string> files{filename};
+  return Load(files, matrix, info, fatal, transpose);
+}
+
+// Image loading API for multiple files.
+template<typename eT>
+bool Load(const std::vector<std::string>& files,
+          arma::Mat<eT>& matrix,
+          ImageInfo& info,
+          const bool fatal,
+          const bool transpose)
+{
+  Timer::Start("loading_image");
+  bool status;
+  try
+  {
+    Image loader;
+    status = loader.Load(files, matrix, info.width, info.height,
+        info.channels, info.flipVertical);
+
+    // We transpose by default. So, un-transpose if necessary.
+    if (!transpose)
+      matrix = arma::trans(matrix);
+  }
+  catch (std::exception& e)
+  {
+    Timer::Stop("loading_image");
+    if (fatal)
+      Log::Fatal << e.what() << std::endl;
+    else
+      Log::Warn << e.what() << std::endl;
+
+    return false;
+  }
+
+  Timer::Start("loading_image");
+  return status;
+}
+#endif
 
 } // namespace data
 } // namespace mlpack

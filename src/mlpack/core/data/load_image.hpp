@@ -10,10 +10,10 @@
  * http://www.opensource.org/licenses/BSD-3-Clause for more information.
  */
 
+#ifdef HAS_STB // Compile this only if stb is present.
+
 #ifndef MLPACK_CORE_DATA_LOAD_IMAGE_HPP
 #define MLPACK_CORE_DATA_LOAD_IMAGE_HPP
-
-#ifdef HAS_STB // Compile this only if stb is present.
 
 #include <mlpack/core.hpp>
 #include <mlpack/core/util/log.hpp>
@@ -35,8 +35,6 @@ namespace fs = std::filesystem;
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
 #endif
-
-#include "image_info.hpp"
 
 namespace mlpack {
 namespace data {
@@ -196,40 +194,12 @@ class Image
   size_t channels;
 };
 
-template<typename eT>
-bool Load(const std::string& filename,
-          arma::Mat<eT>& matrix,
-          ImageInfo& info,
-          const bool fatal = false,
-          const bool transpose = true);
-
-template<typename eT>
-bool Load(const std::vector<std::string>& files,
-          arma::Mat<eT>& matrix,
-          ImageInfo& info,
-          const bool fatal = false,
-          const bool transpose = true);
-
-template<typename eT>
-bool Save(const std::string& filename,
-          arma::Mat<eT>& matrix,
-          ImageInfo& info,
-          const bool fatal = false,
-          const bool transpose = true);
-
-template<typename eT>
-bool Save(const std::vector<std::string>& files,
-          arma::Mat<eT>& matrix,
-          ImageInfo& info,
-          const bool fatal = false,
-          const bool transpose = true);
-
 } // namespace data
 } // namespace mlpack
 
 // Include implementation of Image.
 #include "load_image_impl.hpp"
 
-#endif // HAS_STB.
-
 #endif
+
+#endif // HAS_STB.

@@ -21,6 +21,11 @@
 #include "format.hpp"
 #include "dataset_mapper.hpp"
 
+#ifdef HAS_STB // Include this only if stb is present.
+#include "image_info.hpp"
+#endif
+
+
 namespace mlpack {
 namespace data /** Functions to load and save matrices and models. */ {
 
@@ -286,6 +291,25 @@ bool Load(const std::string& filename,
           T& t,
           const bool fatal = false,
           format f = format::autodetect);
+
+#ifdef HAS_STB
+/*
+ * Image loading interfaces.
+ */
+template<typename eT>
+bool Load(const std::string& filename,
+          arma::Mat<eT>& matrix,
+          ImageInfo& info,
+          const bool fatal = false,
+          const bool transpose = true);
+
+template<typename eT>
+bool Load(const std::vector<std::string>& files,
+          arma::Mat<eT>& matrix,
+          ImageInfo& info,
+          const bool fatal = false,
+          const bool transpose = true);
+#endif
 
 } // namespace data
 } // namespace mlpack
